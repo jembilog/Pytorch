@@ -118,6 +118,7 @@ epochs = 500
 for epoch in range(epochs):
     model.train()
     train_loss = 0
+    train_correct = 0
     for X_batch, Y_batch in train_loader:
         outputs = model(X_batch)
         loss = criterion(outputs, Y_batch)
@@ -125,7 +126,12 @@ for epoch in range(epochs):
         loss.backward()
         optimizer.step()
         train_loss += loss.item() * X_batch.size(0)
+        #calculate the training acc
+        predicted = torch.argmax(outputs,dim=1)
+        train_correct += (predicted == Y_batch).sum().item()
+
     train_loss /= len(train_loader.dataset)
+    train_accuracy = train_correct / len(train_loader.dataset)
 
 #validation
     model.eval()
