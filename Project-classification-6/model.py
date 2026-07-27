@@ -156,3 +156,52 @@ for epoch in range(epochs):
         if counter >= patience:
             print(f"Early stopping triggered at epoch {epoch+1}.")
             break
+
+#load best model
+model.load_state_dict(torch.load("best_model.pth"))
+
+#final testing
+model.eval()
+predictions = []
+actual = []
+
+with torch.no_grad():
+    for X_batch, Y_batch in test_loader:
+        outputs = model(X_batch)
+        predicted = torch.argmax(outputs, dim=1)
+        predictions.extend(predicted.numpy())
+        actual.extend(Y_batch.numpy())
+
+accuracy = accuracy_score(actual,predictions)
+print(f"Final Test Accuracy: {accuracy*100:.2f}%")
+
+new_student = pd.DataFrame({
+
+    "StudyHours":[6],
+    "Attendance":[90],
+    "SleepHours":[7],
+    "PreviousGrade":[85],
+    "AssignmentsCompleted":[8],
+    "InternetAccess":["Yes"],
+    "Extracurricular":["Yes"]
+
+})
+
+new_student = preprocessor.transform(new_student)
+
+if hasattr(new_student,"toarray"):
+    new_student = new_student.toarray()
+new_student = torch.tensor(new_student,dtype=torch.float32)
+
+model.eval()
+with torch.no_grad():
+    output = model(new_student)
+    probabilities = torch.softmax(output, dim=1).squeeze(0)
+    prediction = torch.argmax(output, dim=1)#it returns 0
+print(f"Probability of FAILING: {probabilities[0].item():.2%}")
+print(f"Probability of PASSING: {probabilities[1].item():.2%}")
+print("\nPrediction")
+if prediction.item() == 1:
+    print("Prediction: PASS")
+else:
+    print("Prediction: FAIL")
