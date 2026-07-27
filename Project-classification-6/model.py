@@ -136,11 +136,15 @@ for epoch in range(epochs):
 #validation
     model.eval()
     validation_loss = 0
+    val_correct = 0
     with torch.no_grad():
         for X_batch, Y_batch in val_loader:
             outputs = model(X_batch)
             loss = criterion(outputs, Y_batch)
             validation_loss += loss.item() * X_batch.size(0)
+
+            predicted = torch.argmax(outputs, dim=1)
+            val_correct += (predicted == Y_batch).sum().item()
     validation_loss /= len(val_loader.dataset)
 
     print(
