@@ -149,8 +149,8 @@ for epoch in range(epochs):
 
     print(
         f"Epoch {epoch+1:03d} | "
-        f"Train Loss: {train_loss:.4f} | "
-        f"Validation Loss: {validation_loss:.4f}"
+        f"Train Loss: {train_loss:.4f} | Train acc: {train_accuracy*100:.2f}% "
+        f"Validation Loss: {validation_loss:.4f} | Val Acc {val_accuracy*100:.2f}"
     )
 
     if validation_loss < best_loss:
